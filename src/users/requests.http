@@ -3,7 +3,10 @@ POST http://localhost:3000/auth/signup
 content-type: application/json
 
 {
-    "email": "Mohamed@gmail.com",
-    "password": "123",
+    "email": "omar@gmail.com",
+    "password": "12",
     "message": "Hi, I am a hacker! Your dto MUST catch me"
 } 
+
+### Find a particular user with a given ID
+GET http://localhost:3000/auth/12
