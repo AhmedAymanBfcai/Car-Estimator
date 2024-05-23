@@ -3,7 +3,7 @@ POST http://localhost:3000/auth/signup
 content-type: application/json
 
 {
-    "email": "ahmed@gmail.com",
+    "email": "Mohamed@gmail.com",
     "password": "123",
     "message": "Hi, I am a hacker! Your dto MUST catch me"
-}
+} 
