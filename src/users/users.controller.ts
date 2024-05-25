@@ -2,8 +2,11 @@ import { Body, Controller, Post, Get, Patch, Param, Query, Delete, NotFoundExcep
 import { CreateUserDto } from './dtos/create-user-dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user-dto';
+import { UserDto } from './dtos/user.dto';
+import { Serlialize } from 'src/interceptors/serialize.interceptor';
 
-@Controller('auth') //auth is used as a prefix for all our handlers in the class
+@Serlialize(UserDto)
+@Controller('auth')
 export class UsersController {
     constructor(private userService: UsersService){}
 
