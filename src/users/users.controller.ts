@@ -9,23 +9,43 @@ import { AuthService } from './auth.service';
 @Serlialize(UserDto)
 @Controller('auth')
 export class UsersController {
-    constructor(private userService: UsersService,
+    constructor(private usersService: UsersService,
         private authService: AuthService
     ){}
 
+    @Get('/whoami')
+    async whoAmI(@Session() session: any) {
+        const user = await this.usersService.findOne(session.userId);
+        
+        if(user == null) {
+            throw new NotFoundException("No signed in user");
+        }
+
+        return user;
+    }
+
+    @Post('/signout')
+    signOut(@Session() session: any) {
+        session.userId = null;
+    }
+
     @Post('/signup')
-    createUser(@Body() body: CreateUserDto) {
-        return this.authService.signup(body.email, body.password);
+    async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = await this.authService.signup(body.email, body.password);
+        session.userId = user.id;
+        return user;
     }
 
     @Post('/signin')
-    signin(@Body() body: CreateUserDto) {
-        return this.authService.signin(body.email, body.password);
+    async signin(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = await this.authService.signin(body.email, body.password);
+        session.userId = user.id;
+        return user;
     }
 
     @Get('/:id')
     async findUser(@Param('id') id: string) {
-        const user = await this.userService.findOne(parseInt(id)); // As nest deal with the number in the url as a string.
+        const user = await this.usersService.findOne(parseInt(id)); // As nest deal with the number in the url as a string.
         if (!user){
             throw new NotFoundException('User not found');
         }
@@ -35,16 +55,16 @@ export class UsersController {
 
     @Get()
     findAllUsers(@Query('email') email: string) {
-        return this.userService.find(email);
+        return this.usersService.find(email);
     }
 
     @Delete('/:id')
     removeUser(@Param('id') id: string) {
-        return this.userService.remove(parseInt(id))
+        return this.usersService.remove(parseInt(id))
     }
 
     @Patch('/:id')
     updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-        return this.userService.update(parseInt(id), body)
+        return this.usersService.update(parseInt(id), body)
     }
 }
