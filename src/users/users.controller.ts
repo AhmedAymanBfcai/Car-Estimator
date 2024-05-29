@@ -5,6 +5,8 @@ import { UpdateUserDto } from './dtos/update-user-dto';
 import { UserDto } from './dtos/user.dto';
 import { Serlialize } from 'src/interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from './users.entity';
 
 @Serlialize(UserDto)
 @Controller('auth')
@@ -13,14 +15,19 @@ export class UsersController {
         private authService: AuthService
     ){}
 
-    @Get('/whoami')
-    async whoAmI(@Session() session: any) {
-        const user = await this.usersService.findOne(session.userId);
+    // @Get('/whoami')
+    // async whoAmI(@Session() session: any) {
+    //     const user = await this.usersService.findOne(session.userId);
         
-        if(user == null) {
-            throw new NotFoundException("No signed in user");
-        }
+    //     if(user == null) {
+    //         throw new NotFoundException("No signed in user");
+    //     }
 
+    //     return user;
+    // }
+
+    @Get('/whoami')
+    whoAmI(@CurrentUser() user: User) {
         return user;
     }
 
