@@ -6,6 +6,7 @@ import { User } from './users.entity';
 import { AuthService } from './auth.service';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthGuard } from 'src/gurads/auth.gurd';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])], // Creates repository for us.
