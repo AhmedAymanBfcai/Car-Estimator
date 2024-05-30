@@ -9,9 +9,14 @@ describe('AuthService', () => {
 
     beforeEach(async () =>{
         // Create a fake copy of the users service
+        const users: User[] = [];
         fakeUsersService = {
-            find: () => Promise.resolve([]),
-            create: (email: string, password: string) => Promise.resolve({ id: 1, email, password } as User)
+            find: (email: string) => { const filteredUsers = users.filter(user => user.email === email); return Promise.resolve(filteredUsers)},
+            create: (email: string, password: string) => {
+                const user = { id: Math.floor(Math.random() * 999999), email, password} as User
+                users.push(user);
+                return Promise.resolve(user);
+            }
         }
         
         // Create new DI Container
@@ -37,21 +42,37 @@ describe('AuthService', () => {
     });
 
     it('throws an error if user sign up with email that in use', async (done) => {
-        fakeUsersService.find = () => Promise.resolve([ {id: 1, email: 'a', password: '1'} as User ]);
+        await service.signup('ahmed@gmail.com', 'abcde');
         try {
             await service.signup('ahmed@gmail.com', 'abcde'); // sign up with use the new implementation for the fakeUsersService above.
+        } catch (err) {
+            done();
+
+        }
+    });
+
+    it('throws an error if sign in is called with an unused email', async (done) => {
+        try {
+            await service.signin('ahmed@gmail.com', 'abcde');
         } catch (err) {
             done();
         }
     });
 
-    it('sign in a user with a correct email and password', async () => {
-        const user = await service.signup('ahmed@gmail.com', 'abcde');
-
-        expect(user.password).not.toEqual('abcde');
-        const [salt, hash] = user.password.split('.');
-        expect(salt).toBeDefined();
-        expect(hash).toBeDefined();
+    it('throws an error if invalid password is provided', async (done) => {
+        await service.signup('ahmed@gmail.com', 'password1111');
+        try {
+            await service.signin('ahmed@gmail.com', 'password');
+        } catch (err) {
+            done();
+        }
     });
+
+    it('returns a user if correct password is provided', async () => {
+        await service.signup('ahmed@gmail.com', 'password');
+        const user = await service.signin('ahmed@gmail.com', 'password');
+        expect(user).toBeDefined();
+    });
+
 
 });
