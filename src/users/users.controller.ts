@@ -17,17 +17,6 @@ export class UsersController {
         private authService: AuthService
     ){}
 
-    // @Get('/whoami')
-    // async whoAmI(@Session() session: any) {
-    //     const user = await this.usersService.findOne(session.userId);
-        
-    //     if(user == null) {
-    //         throw new NotFoundException("No signed in user");
-    //     }
-
-    //     return user;
-    // }
-
     @Get('/whoami')
     whoAmI(@CurrentUser() user: User) {
         return user;
